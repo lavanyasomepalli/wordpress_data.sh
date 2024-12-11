@@ -46,8 +46,8 @@ resource "aws_security_group" "wordpress_sg" {
 resource "aws_instance" "wordpress" {
   ami           = "ami-0166fe664262f664c"
   instance_type = "t2.micro"
-  key_name      = "spandana"              
-  subnet_id     = "subnet-0c85ac199c0740b9f"            
+  key_name      = "LAVANYA"              
+  subnet_id     = "subnet-02c3f451dbe1c23f3"            
   security_groups = [aws_security_group.wordpress_sg.id]
 
   user_data = file("data.sh")            
