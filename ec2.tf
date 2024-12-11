@@ -2,9 +2,22 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_security_group" "wordpress_sg" {
-  name        = "wordpress-sg"
-  description = "Allow HTTP, HTTPS, SSH, and MySQL traffic"
+resource "aws_instance" "my_instance" {
+  ami                   ="ami-0166fe664262f664c"
+  instance_type          = "t2.micro"
+  count                  = 1
+  key_name               = "LAVANYA"
+  associate_public_ip_address = true
+  user_data              = file("data.sh")
+  subnet_id = "subnet-04175100026a4d34e"
+  tags = {
+    Name = "My public Instance 1"
+  }
+}
+
+resource "aws_security_group" "demosg" {
+  name        = "demosg"
+  description = "Security group for WordPress and MySQL"
 
   ingress {
     from_port   = 80
@@ -12,19 +25,11 @@ resource "aws_security_group" "wordpress_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  ingress {
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  ingress{
+    from_port=443
+    to_port=443
+    protocol="tcp"
+    cidr_blocks=["0.0.0.0/0"]
   }
 
   ingress {
@@ -33,26 +38,18 @@ resource "aws_security_group" "wordpress_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress{
+   from_port=22
+   to_port=22
+   protocol="tcp"
+   cidr_blocks=["0.0.0.0/0"]
+  }
+
 
   egress {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
-  }
-}
-
-# Create an EC2 instance for WordPress
-resource "aws_instance" "wordpress" {
-  ami           = "ami-0166fe664262f664c"
-  instance_type = "t2.micro"
-  key_name      = "LAVANYA"              
-  subnet_id     = "subnet-02c3f451dbe1c23f3"            
-  security_groups = [aws_security_group.wordpress_sg.id]
-
-  user_data = file("data.sh")            
-
-  tags = {
-    Name = "WordPressServer"
   }
 }
